@@ -31,7 +31,7 @@ type aexpr =
   | Var of string
   | Add of aexpr * aexpr
   | Mul of aexpr * aexpr
-  | Sub of aexår * aexpr
+  | Sub of aexpr * aexpr
 
 let e1 = CstI 17;;
 
@@ -46,6 +46,11 @@ let e4 = Prim("==", Prim("+", CstI 5, CstI 7), CstI 10);;
 let e5 = Prim("==", Prim("+", Var "a", CstI 7), CstI 10);;
 let e6 = Prim("min", CstI 5, CstI 6);;
 let e7 = Prim("max", CstI 5, CstI 6);;
+
+// Arithmetic expressions
+let e8 = Sub(Var "v", Add(Var "w", Var "z"));;
+let e9 = Mul(2, Sub(Var "v", Add(Var "w", Var "z")));;
+let e10 = Add(Add(Add(Var "x", Var "y"), Var "z"), Var "v");;
 
 (* Evaluation within an environment *)
 
