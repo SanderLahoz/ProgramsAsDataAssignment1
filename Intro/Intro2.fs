@@ -26,6 +26,13 @@ type expr =
   | Prim of string * expr * expr
   | If of expr * expr * expr
 
+type aexpr =
+  | CstI of int
+  | Var of string
+  | Add of aexpr * aexpr
+  | Mul of aexpr * aexpr
+  | Sub of aexår * aexpr
+
 let e1 = CstI 17;;
 
 let e2 = Prim("+", CstI 3, Var "a");;
