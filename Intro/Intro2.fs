@@ -31,6 +31,13 @@ let e2 = Prim("+", CstI 3, Var "a");;
 
 let e3 = Prim("+", Prim("*", Var "b", CstI 9), Var "a");;
 
+// Should evaluate to false (5 + 7) == 10 ~> false
+let e4 = Prim("==", Prim("+", CstI 5, CstI 7), CstI 10);;
+
+// Should evaluate to true ("a" + 7) ~> (3 + 7) == 10 ~> true 
+let e5 = Prim("==", Prim("+", Var "a", CstI 7), CstI 10);;
+let e6 = Prim("min", CstI 5, CstI 6);;
+let e7 = Prim("max", CstI 5, CstI 6);;
 
 (* Evaluation within an environment *)
 
@@ -41,9 +48,15 @@ let rec eval e (env : (string * int) list) : int =
     | Prim("+", e1, e2) -> eval e1 env + eval e2 env
     | Prim("*", e1, e2) -> eval e1 env * eval e2 env
     | Prim("-", e1, e2) -> eval e1 env - eval e2 env
-    | Prim _            -> failwith "unknown primitive";;
+    | Prim ("min", e1, e2) -> if (eval e1 env) < (eval e2 env) then eval e1 env else eval e2 env
+    | Prim ("max", e1, e2) -> if (eval e1 env) > (eval e2 env) then eval e1 env else eval e2 env
+    | Prim ("==", e1, e2) -> if (eval e1 env) = (eval e2 env) then 1 else 0     
 
 let e1v  = eval e1 env;;
 let e2v1 = eval e2 env;;
 let e2v2 = eval e2 [("a", 314)];;
 let e3v  = eval e3 env;;
+let e4v = eval e4 env;;
+let e5v = eval e5 env;;
+let e6v = eval e6 env;;
+let e7v = eval e7 env;;
