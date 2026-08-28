@@ -33,7 +33,7 @@ type aexpr =
   | Mul of aexpr * aexpr
   | Sub of aexpr * aexpr
 
-let e1 = CstI 17;;
+let e1 : expr = CstI 17;;
 
 let e2 = Prim("+", CstI 3, Var "a");;
 
@@ -64,6 +64,15 @@ let rec eval e (env : (string * int) list) : int =
     | Prim ("min", e1, e2) -> if (eval e1 env) < (eval e2 env) then eval e1 env else eval e2 env
     | Prim ("max", e1, e2) -> if (eval e1 env) > (eval e2 env) then eval e1 env else eval e2 env
     | Prim ("==", e1, e2) -> if (eval e1 env) = (eval e2 env) then 1 else 0     
+
+// Formatting arithmetic expressions
+let rec fmt ae : string =
+	match ae with
+	| CstI i 			-> (string i) 
+	| Var x				-> x
+	| Add(ae1, ae2) 	-> "(" + (fmt ae1) + "+" + (fmt ae2) + ")"
+	| Mul(ae1, ae2) 	-> "(" + (fmt ae1) + "*" + (fmt ae2) + ")"
+	| Sub(ae1, ae2) 	-> "(" + (fmt ae1) + "-" + (fmt ae2) + ")"
 
 let rec eval' e (env : (string * int) list) : int =
     match e with
