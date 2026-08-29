@@ -92,8 +92,8 @@ let rec fmt ae : string =
 
 let rec simplify ae : aexpr =
     match ae with
-    | CstI i -> ae
-    | Var x -> ae
+    | CstI _ -> ae
+    | Var _ -> ae
     | Add(ae1, ae2) ->
         let ae1' = simplify ae1
         let ae2' = simplify ae2
@@ -110,10 +110,10 @@ let rec simplify ae : aexpr =
         let ae2' = simplify ae2
 
         match ae1', ae2' with
-        | Var x, CstI 0 -> CstI 0
+        | Var _, CstI 0 -> CstI 0
         | CstI 0, Var x -> CstI 0
         | CstI 0, CstI x -> CstI 0
-        | CstI x, CstI 0 -> CstI 0
+        | CstI _, CstI 0 -> CstI 0
         | Var x, CstI 1 -> Var x
         | CstI 1, Var x -> Var x
         | CstI 1, CstI x -> CstI x
