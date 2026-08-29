@@ -55,3 +55,4 @@ nunit-*.xml
 .idea/vcs.xml
 
 .fake
+.DS_Store
