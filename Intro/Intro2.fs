@@ -103,7 +103,7 @@ let rec simplify ae : aexpr =
         | CstI 0, Var x -> Var x
         | CstI 0, CstI x -> CstI x
         | CstI x, CstI 0 -> CstI x
-        | CstI x, CstI y -> Add(CstI x, CstI y)
+        | CstI x, CstI y -> CstI(x + y)
         | x, y -> Add(simplify x, simplify y)
     | Mul(ae1, ae2) ->
         let ae1' = simplify ae1
@@ -118,7 +118,7 @@ let rec simplify ae : aexpr =
         | CstI 1, Var x -> Var x
         | CstI 1, CstI x -> CstI x
         | CstI x, CstI 1 -> CstI x
-        | CstI x, CstI y -> Mul(CstI x, CstI y)
+        | CstI x, CstI y -> CstI(x * y)
         | x, y -> Mul(simplify x, simplify y)
     | Sub(ae1, ae2) ->
         let ae1' = simplify ae1
@@ -128,8 +128,11 @@ let rec simplify ae : aexpr =
         | Var x, CstI 0 -> Var x
         | CstI x, CstI 0 -> CstI x
         | CstI x, CstI y when x = y -> CstI 0
-        | CstI x, CstI y -> Sub(CstI x, CstI y)
+        | CstI x, CstI y -> CstI(x - y)
         | x, y -> Sub(simplify x, simplify y)
+
+
+
 
 // Examples and testing
 
