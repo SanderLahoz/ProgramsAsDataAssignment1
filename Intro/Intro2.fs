@@ -122,7 +122,7 @@ let rec simplify ae : aexpr =
         let ae1' = simplify ae1
         let ae2' = simplify ae2
 
-        match (ae1', ae2') with
+        match ae1', ae2' with
         | Var x, CstI 0 -> Var x
         | CstI x, CstI 0 -> CstI x
         | CstI x, CstI y when x = y -> CstI 0
