@@ -131,6 +131,15 @@ let rec simplify ae : aexpr =
         | CstI x, CstI y -> CstI(x - y)
         | x, y -> Sub(simplify x, simplify y)
 
+let rec differentiate ae v =
+    match ae with
+    | CstI _ -> CstI 0
+    | Var x when x = v -> CstI 1
+    | Var _ -> CstI 0
+    | Add(ae1, ae2) -> Add(differentiate ae1 v, differentiate ae2 v)
+    | Sub(ae1, ae2) -> Sub(differentiate ae1 v, differentiate ae2 v)
+    | Mul(ae1, ae2) -> Add(Mul(differentiate ae1 v, ae2), Mul(ae1, differentiate ae2 v))
+
 
 
 
