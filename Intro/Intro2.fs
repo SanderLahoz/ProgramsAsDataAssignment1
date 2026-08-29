@@ -55,16 +55,6 @@ let rec eval (e: expr) (env: (string * int) list) : int =
             eval e2 env
     | Prim("==", e1, e2) -> if (eval e1 env) = (eval e2 env) then 1 else 0
 
-
-// Formatting arithmetic expressions
-let rec fmt ae : string =
-    match ae with
-    | aexpr.CstI i -> (string i)
-    | Var x -> x
-    | Add(ae1, ae2) -> "(" + (fmt ae1) + "+" + (fmt ae2) + ")"
-    | Mul(ae1, ae2) -> "(" + (fmt ae1) + "*" + (fmt ae2) + ")"
-    | Sub(ae1, ae2) -> "(" + (fmt ae1) + "-" + (fmt ae2) + ")"
-
 let rec eval' e (env: (string * int) list) : int =
     match e with
     | expr.CstI i -> i
@@ -89,6 +79,56 @@ let rec eval' e (env: (string * int) list) : int =
             (eval' e3 env)
 
 
+// Formatting arithmetic expressions
+let rec fmt ae : string =
+    match ae with
+    | aexpr.CstI i -> (string i)
+    | Var x -> x
+    | Add(ae1, ae2) -> "(" + (fmt ae1) + " + " + (fmt ae2) + ")"
+    | Mul(ae1, ae2) -> "(" + (fmt ae1) + " * " + (fmt ae2) + ")"
+    | Sub(ae1, ae2) -> "(" + (fmt ae1) + " - " + (fmt ae2) + ")"
+
+let rec simplify ae : aexpr =
+    match ae with
+    | CstI i -> ae
+    | Var x -> ae
+    | Add(ae1, ae2) ->
+        let ae1' = simplify ae1
+        let ae2' = simplify ae2
+
+        match ae1', ae2' with
+        | Var x, CstI 0 -> Var x
+        | CstI 0, Var x -> Var x
+        | CstI 0, CstI x -> CstI x
+        | CstI x, CstI 0 -> CstI x
+        | CstI x, CstI y -> Add(CstI x, CstI y)
+        | x, y -> Add(simplify x, simplify y)
+    | Mul(ae1, ae2) ->
+        let ae1' = simplify ae1
+        let ae2' = simplify ae2
+
+        match ae1', ae2' with
+        | Var x, CstI 0 -> CstI 0
+        | CstI 0, Var x -> CstI 0
+        | CstI 0, CstI x -> CstI 0
+        | CstI x, CstI 0 -> CstI 0
+        | Var x, CstI 1 -> Var x
+        | CstI 1, Var x -> Var x
+        | CstI 1, CstI x -> CstI x
+        | CstI x, CstI 1 -> CstI x
+        | CstI x, CstI y -> Mul(CstI x, CstI y)
+        | x, y -> Mul(simplify x, simplify y)
+    | Sub(ae1, ae2) ->
+        let ae1' = simplify ae1
+        let ae2' = simplify ae2
+
+        match (ae1', ae2') with
+        | Var x, CstI 0 -> Var x
+        | CstI x, CstI 0 -> CstI x
+        | CstI x, CstI y when x = y -> CstI 0
+        | CstI x, CstI y -> Sub(CstI x, CstI y)
+        | x, y -> Sub(simplify x, simplify y)
+
 // Examples and testing
 
 let e1: expr = expr.CstI 17
@@ -110,6 +150,8 @@ let e8 = Sub(Var "v", Add(Var "w", Var "z"))
 let e9 = Mul(CstI 2, Sub(Var "v", Add(Var "w", Var "z")))
 let e10 = Add(Add(Add(Var "x", Var "y"), Var "z"), Var "v")
 
+let e11 = Mul(Add(CstI 1, CstI 0), Add(Var "x", CstI 0))
+
 
 let e1v = eval e1 env
 let e2v1 = eval e2 env
@@ -129,3 +171,9 @@ let e4v' = eval' e4 env
 let e5v' = eval' e5 env
 let e6v' = eval' e6 env
 let e7v' = eval' e7 env
+
+let e8v1 = fmt e8
+let e9v1 = fmt e9
+let e10v1 = fmt e10
+
+let e11v1 = simplify e11
