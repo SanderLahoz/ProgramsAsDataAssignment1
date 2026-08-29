@@ -54,6 +54,8 @@ let rec eval (e: expr) (env: (string * int) list) : int =
         else
             eval e2 env
     | Prim("==", e1, e2) -> if (eval e1 env) = (eval e2 env) then 1 else 0
+    | Prim(_, _, _) -> failwith "Unexpected pattern for Prim in expression"
+    | If(_, _, _) -> failwith "Unexpected pattern for If in expression"
 
 let rec eval' e (env: (string * int) list) : int =
     match e with
