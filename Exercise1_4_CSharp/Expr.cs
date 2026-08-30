@@ -69,6 +69,15 @@ abstract class Binop : Expr
     {
         return "(" + E1.ToString() + Symbol() + E2.ToString() + ")";
     }
+
+    protected abstract int Combine(int v1, int v2);
+
+    public override int Eval(List<(string, int)> env)
+    {
+        int v1 = E1.Eval(env);
+        int v2 = E2.Eval(env);
+        return Combine(v1, v2);
+    }
 }
 
 class Add : Binop

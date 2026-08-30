@@ -11,3 +11,7 @@ Console.WriteLine(e2.ToString());
 
 Expr e3 = new Mul(new CstI(10), new CstI(2));
 Console.WriteLine(e3.ToString());
+
+var env = new List<(string, int)> { ("b", 5) };
+Expr e4 = new Add(new CstI(2), new Var("b"));
+Console.WriteLine(e4.Eval(env));
