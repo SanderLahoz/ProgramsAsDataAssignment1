@@ -3,6 +3,8 @@ namespace DefaultNamespace;
 abstract class Expr
 {
     public abstract override string ToString();
+
+    public abstract int Eval(List<(string, int)> env);
 }
 
 class CstI : Expr
@@ -17,6 +19,11 @@ class CstI : Expr
     public override string ToString()
     {
         return i.ToString();
+    }
+
+    public override int Eval(List<(string, int)> env)
+    {
+        return i;
     }
 }
 
@@ -33,6 +40,8 @@ class Var : Expr
     {
         return x;
     }
+    
+    //missing 
 }
 
 abstract class Binop : Expr
@@ -62,6 +71,11 @@ class Add : Binop
     {
         return "+";
     }
+
+    protected override int Combine(int v1, int v2)
+    {
+        return v1 + v2;
+    }
 }
 
 class Sub : Binop
@@ -72,6 +86,11 @@ class Sub : Binop
     {
         return "-";
     }
+    
+    protected override int Combine(int v1, int v2)
+    {
+        return v1 - v2;
+    }
 }
 
 class Mul : Binop
@@ -81,5 +100,10 @@ class Mul : Binop
     protected override string Symbol()
     {
         return "*";
+    }
+    
+    protected override int Combine(int v1, int v2)
+    {
+        return v1 * v2;
     }
 }
