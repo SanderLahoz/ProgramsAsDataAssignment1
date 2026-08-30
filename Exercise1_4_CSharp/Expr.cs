@@ -40,8 +40,16 @@ class Var : Expr
     {
         return x;
     }
-    
-    //missing 
+
+    public override int Eval(List<(string, int)> env)
+    {
+        foreach (var (name, v) in env)
+        {
+            if (name == x)
+                return v;
+        }
+        throw new Exception(x + " not found");
+    }
 }
 
 abstract class Binop : Expr
