@@ -1,5 +1,5 @@
 namespace DefaultNamespace;
-
+// Everything was written by us.
 abstract class Expr
 {
     public abstract override string ToString();
