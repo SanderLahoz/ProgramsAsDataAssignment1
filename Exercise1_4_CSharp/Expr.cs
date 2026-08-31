@@ -5,6 +5,8 @@ abstract class Expr
     public abstract override string ToString();
 
     public abstract int Eval(List<(string, int)> env);
+
+    public abstract Expr Simplify();
 }
 
 class CstI : Expr
@@ -24,6 +26,11 @@ class CstI : Expr
     public override int Eval(List<(string, int)> env)
     {
         return i;
+    }
+
+    public override Expr Simplify()
+    {
+        return this;
     }
 }
 
@@ -49,6 +56,11 @@ class Var : Expr
                 return v;
         }
         throw new Exception(x + " not found");
+    }
+    
+    public override Expr Simplify()
+    {
+        return this;
     }
 }
 
@@ -93,6 +105,25 @@ class Add : Binop
     {
         return v1 + v2;
     }
+
+    public override Expr Simplify()
+    {
+        Expr sime1 = E1.Simplify();
+        Expr sime2 = E2.Simplify();
+
+        if (sime1 is CstI cone1 && sime2 is CstI cone2)
+            return new CstI(cone1.i + cone2.i);
+        
+        //0 + e -> e
+        if (sime1 is CstI check1 && check1.i == 0)
+            return sime2;
+        
+        //e + 0 -> e
+        if (sime2 is CstI check2 && check2.i == 0)
+            return sime2;
+
+        return new Add(sime1, sime2);
+    }
 }
 
 class Sub : Binop
@@ -108,6 +139,25 @@ class Sub : Binop
     {
         return v1 - v2;
     }
+    
+    public override Expr Simplify()
+    {
+        Expr sime1 = E1.Simplify();
+        Expr sime2 = E2.Simplify();
+
+        if (sime1 is CstI cone1 && sime2 is CstI cone2)
+            return new CstI(cone1.i - cone2.i);
+        
+        //e - 0 -> e
+        if (sime2 is CstI check1 && check1.i == 0)
+            return sime1;
+        
+        //e - e -> 0
+        if (sime2 is CstI check2 == check2.i)
+            return 0;
+
+        return new Sub(sime1, sime2);
+    }
 }
 
 class Mul : Binop
@@ -122,5 +172,32 @@ class Mul : Binop
     protected override int Combine(int v1, int v2)
     {
         return v1 * v2;
+    }
+    
+    public override Expr Simplify()
+    {
+        Expr sime1 = E1.Simplify();
+        Expr sime2 = E2.Simplify();
+
+        if (sime1 is CstI cone1 && sime2 is CstI cone2)
+            return new CstI(cone1.i * cone2.i);
+        
+        //1 * e -> e
+        if (sime1 is CstI check1 && check1.i == 1)
+            return sime2;
+        
+        //e * 1 -> e
+        if (sime2 is CstI check2 && check2.i == 1)
+            return sime2;
+        
+        //0 * e -> 0
+        if (sime1 is CstI check1 && check1.i == 0)
+            return 0;
+        
+        //e * 0 -> 0
+        if (sime2 is CstI check1 && check1.i == 0)
+            return 0;
+
+        return new Mul(sime1, sime2);
     }
 }
