@@ -24,8 +24,9 @@ type expr =
     | CstI of int
     | Var of string
     | Prim of string * expr * expr
-    | If of expr * expr * expr
+    | If of expr * expr * expr      // Written by us.
 
+// aexpr was written by us.
 type aexpr =
     | CstI of int
     | Var of string
@@ -35,15 +36,14 @@ type aexpr =
 
 
 (* Evaluation within an environment *)
-
 let rec eval (e: expr) (env: (string * int) list) : int =
     match e with
-    | expr.CstI i -> i
-    | expr.Var x -> lookup env x
+    | expr.CstI i -> i              // Modified by us.
+    | expr.Var x -> lookup env x    // Modified by us.
     | Prim("+", e1, e2) -> eval e1 env + eval e2 env
     | Prim("*", e1, e2) -> eval e1 env * eval e2 env
     | Prim("-", e1, e2) -> eval e1 env - eval e2 env
-    | Prim("min", e1, e2) ->
+    | Prim("min", e1, e2) -> // Section here and below was written by us.
         if (eval e1 env) < (eval e2 env) then
             eval e1 env
         else
@@ -56,12 +56,13 @@ let rec eval (e: expr) (env: (string * int) list) : int =
     | Prim("==", e1, e2) -> if (eval e1 env) = (eval e2 env) then 1 else 0
     | Prim(_, _, _) -> failwith "Unexpected pattern for Prim in expression"
     | If(_, _, _) -> failwith "Unexpected pattern for If in expression"
+// Section above was written by us.
 
 let rec eval' e (env: (string * int) list) : int =
     match e with
-    | expr.CstI i -> i
-    | expr.Var x -> lookup env x
-    | Prim(ope, e1, e2) ->
+    | expr.CstI i -> i            // Modified by us.
+    | expr.Var x -> lookup env x  // Modified by us.
+    | Prim(ope, e1, e2) ->        // Section here and below was written by us.
         let i1 = eval' e1 env
         let i2 = eval' e2 env
 
@@ -79,9 +80,10 @@ let rec eval' e (env: (string * int) list) : int =
             (eval' e2 env)
         else
             (eval' e3 env)
-
+                                // Section above was written by us.
 
 // Formatting arithmetic expressions
+// fmt was written by us.
 let rec fmt ae : string =
     match ae with
     | aexpr.CstI i -> (string i)
@@ -90,6 +92,7 @@ let rec fmt ae : string =
     | Mul(ae1, ae2) -> "(" + (fmt ae1) + " * " + (fmt ae2) + ")"
     | Sub(ae1, ae2) -> "(" + (fmt ae1) + " - " + (fmt ae2) + ")"
 
+// simplify was written by us
 let rec simplify ae : aexpr =
     match ae with
     | CstI _ -> ae
@@ -131,6 +134,7 @@ let rec simplify ae : aexpr =
         | CstI x, CstI y -> CstI(x - y)
         | x, y -> Sub(simplify x, simplify y)
 
+// differentiate was written by us.
 let rec differentiate ae v =
     match ae with
     | CstI _ -> CstI 0
@@ -151,8 +155,9 @@ let e2 = Prim("+", expr.CstI 3, expr.Var "a")
 
 let e3 = Prim("+", Prim("*", expr.Var "b", expr.CstI 9), expr.Var "a")
 
+// Section below was written by us.
 // Should evaluate to false (5 + 7) == 10 ~> false
-let e4 = Prim("==", Prim("+", expr.CstI 5, expr.CstI 7), expr.CstI 10)
+let e4 = Prim("==", Prim("+", expr.CstI 5, expr.CstI 7), expr.CstI 10) 
 
 // Should evaluate to true ("a" + 7) ~> (3 + 7) == 10 ~> true
 let e5 = Prim("==", Prim("+", expr.Var "a", expr.CstI 7), expr.CstI 10)
@@ -165,12 +170,14 @@ let e9 = Mul(CstI 2, Sub(Var "v", Add(Var "w", Var "z")))
 let e10 = Add(Add(Add(Var "x", Var "y"), Var "z"), Var "v")
 
 let e11 = Mul(Add(CstI 1, CstI 0), Add(Var "x", CstI 0))
-
+// Section above was written by us.
 
 let e1v = eval e1 env
 let e2v1 = eval e2 env
 let e2v2 = eval e2 [ ("a", 314) ]
 let e3v = eval e3 env
+
+// Section below was written by us.
 let e4v = eval e4 env
 let e5v = eval e5 env
 let e6v = eval e6 env
@@ -191,3 +198,4 @@ let e9v1 = fmt e9
 let e10v1 = fmt e10
 
 let e11v1 = simplify e11
+// Section above was written by us.
