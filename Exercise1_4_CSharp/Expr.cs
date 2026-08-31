@@ -120,7 +120,7 @@ class Add : Binop
         
         //e + 0 -> e
         if (sime2 is CstI check2 && check2.i == 0)
-            return sime2;
+            return sime1;
 
         return new Add(sime1, sime2);
     }
@@ -153,8 +153,8 @@ class Sub : Binop
             return sime1;
         
         //e - e -> 0
-        if (sime2 is CstI check2 == check2.i)
-            return 0;
+        if (sime1.ToString() == sime2.ToString())
+            return new CstI(0);
 
         return new Sub(sime1, sime2);
     }
@@ -188,15 +188,15 @@ class Mul : Binop
         
         //e * 1 -> e
         if (sime2 is CstI check2 && check2.i == 1)
-            return sime2;
+            return sime1;
         
         //0 * e -> 0
-        if (sime1 is CstI check1 && check1.i == 0)
-            return 0;
+        if (sime1 is CstI check3 && check3.i == 0)
+            return new CstI(0);
         
         //e * 0 -> 0
-        if (sime2 is CstI check1 && check1.i == 0)
-            return 0;
+        if (sime2 is CstI check4 && check4.i == 0)
+            return new CstI(0);
 
         return new Mul(sime1, sime2);
     }
