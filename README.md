@@ -5,7 +5,7 @@ Ex 1.1 and 1.2 are in the Intro.fs file in the Intro folder
 Ex 1.4 is located in the Expr.cs in Exercise1_4_CSharp folder and was written in C#
 
 ##Note
-To make the code easily distinguishable, every line that was written by us was
+To make the code easily distinguishable, every line or section that was written or modified by us was
 annotated with "Written by us" comments
 
 
