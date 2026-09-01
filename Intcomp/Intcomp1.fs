@@ -10,37 +10,39 @@ module Intcomp1
 type expr =
     | CstI of int
     | Var of string
-    | Let of string * expr * expr
+    | Let of (string * expr) list * expr
     | Prim of string * expr * expr
 
 (* Some closed expressions: *)
 
+let t =
+    Let([ ("x1", Prim("+", CstI 5, CstI 7)); ("x2", Prim("*", Var "x1", CstI 2)) ], Prim("+", Var "x1", Var "x2"))
+
 let e0 = Prim("+", CstI 17, Prim("+", CstI 5, CstI 7))
-let e1 = Let("z", CstI 17, Prim("+", Var "z", Var "z"))
+let e1 = Let([ ("z", CstI 17) ], Prim("+", Var "z", Var "z"))
 
 let e2 =
-    Let("z", CstI 17, Prim("+", Let("z", CstI 22, Prim("*", CstI 100, Var "z")), Var "z"))
+    Let([ ("z", CstI 17) ], Prim("+", Let([ ("z", CstI 22) ], Prim("*", CstI 100, Var "z")), Var "z"))
 
-let e3 = Let("z", Prim("-", CstI 5, CstI 4), Prim("*", CstI 100, Var "z"))
+let e3 = Let([ ("z", Prim("-", CstI 5, CstI 4)) ], Prim("*", CstI 100, Var "z"))
 
 let e4 =
-    Prim("+", Prim("+", CstI 20, Let("z", CstI 17, Prim("+", Var "z", CstI 2))), CstI 30)
+    Prim("+", Prim("+", CstI 20, Let(([ "z", CstI 17 ]), Prim("+", Var "z", CstI 2))), CstI 30)
 
-let e5 = Prim("*", CstI 2, Let("x", CstI 3, Prim("+", Var "x", CstI 4)))
-
-let e6 = Let("z", Var "x", Prim("+", Var "z", Var "x"))
+let e5 = Prim("*", CstI 2, Let([ ("x", CstI 3) ], Prim("+", Var "x", CstI 4)))
+let e6 = Let([ ("z", Var "x") ], Prim("+", Var "z", Var "x"))
 
 let e7 =
-    Let("z", CstI 3, Let("y", Prim("+", Var "z", CstI 1), Prim("+", Var "z", Var "y")))
+    Let([ ("z", CstI 3) ], Let([ ("y", Prim("+", Var "z", CstI 1)) ], Prim("+", Var "z", Var "y")))
 
 let e8 =
-    Let("z", Let("x", CstI 4, Prim("+", Var "x", CstI 5)), Prim("*", Var "z", CstI 2))
+    Let([ ("z", Let([ ("x", CstI 4) ], Prim("+", Var "x", CstI 5))) ], Prim("*", Var "z", CstI 2))
 
 let e9 =
-    Let("z", CstI 3, Let("y", Prim("+", Var "z", CstI 1), Prim("+", Var "x", Var "y")))
+    Let([ ("z", CstI 3) ], Let([ ("y", Prim("+", Var "z", CstI 1)) ], Prim("+", Var "x", Var "y")))
 
 let e10 =
-    Let("z", Prim("+", Let("x", CstI 4, Prim("+", Var "x", CstI 5)), Var "x"), Prim("*", Var "z", CstI 2))
+    Let([ ("z", Prim("+", Let([ ("x", CstI 4) ], Prim("+", Var "x", CstI 5)), Var "x")) ], Prim("*", Var "z", CstI 2))
 
 (* ---------------------------------------------------------------------- *)
 
@@ -55,10 +57,16 @@ let rec eval e (env: (string * int) list) : int =
     match e with
     | CstI i -> i
     | Var x -> lookup env x
-    | Let(x, erhs, ebody) ->
-        let xval = eval erhs env
-        let env1 = (x, xval) :: env
-        eval ebody env1
+    | Let(bindings, ebody) ->
+        let rec evalEnv bds env =
+            match bds with
+            | [] -> env
+            | (s, ex) :: tail ->
+                let v = eval ex env
+                evalEnv tail ((s, v) :: env)
+
+        let env' = evalEnv bindings env
+        eval ebody env'
     | Prim("+", e1, e2) -> eval e1 env + eval e2 env
     | Prim("*", e1, e2) -> eval e1 env * eval e2 env
     | Prim("-", e1, e2) -> eval e1 env - eval e2 env
@@ -84,12 +92,16 @@ let rec mem x vs =
 
 let rec closedin (e: expr) (vs: string list) : bool =
     match e with
-    | CstI i -> true
+    | CstI _ -> true
     | Var x -> List.exists (fun y -> x = y) vs
-    | Let(x, erhs, ebody) ->
-        let vs1 = x :: vs
-        closedin erhs vs && closedin ebody vs1
-    | Prim(ope, e1, e2) -> closedin e1 vs && closedin e2 vs
+    | Let(bindings, ebody) ->
+        let rec checkBindings bds vs' =
+            match bds with
+            | [] -> closedin ebody vs'
+            | (s, erhs) :: tail -> closedin erhs vs' && checkBindings tail (s :: vs')
+
+        checkBindings bindings vs
+    | Prim(_, e1, e2) -> closedin e1 vs && closedin e2 vs
 
 (* An expression is closed if it is closed in the empty environment *)
 
@@ -117,6 +129,8 @@ let rec remove env x =
 
 (* Naive substitution, may capture free variables: *)
 
+/// TODO: Skipping this function for now as it is not part of the assignment
+/// should be correct to reflect the changes in the new expression language
 let rec nsubst (e: expr) (env: (string * expr) list) : expr =
     match e with
     | CstI i -> e
@@ -137,17 +151,17 @@ let e6s2 = nsubst e6s0 [ ("z", Prim("-", CstI 5, CstI 4)) ]
 let e6s3 = nsubst e6s0 [ ("z", Prim("+", Var "z", Var "z")) ]
 
 // Shows that only z outside the Let gets substituted:
-let e7s0 = Prim("+", Let("z", CstI 22, Prim("*", CstI 5, Var "z")), Var "z")
+let e7s0 = Prim("+", Let([ ("z", CstI 22) ], Prim("*", CstI 5, Var "z")), Var "z")
 
 let e7s1 = nsubst e7s0 [ ("z", CstI 100) ]
 
 // Shows that only the z in the Let rhs gets substituted
-let e8s0 = Let("z", Prim("*", CstI 22, Var "z"), Prim("*", CstI 5, Var "z"))
+let e8s0 = Let([ ("z", Prim("*", CstI 22, Var "z")) ], Prim("*", CstI 5, Var "z"))
 
 let e8s1 = nsubst e8s0 [ ("z", CstI 100) ]
 
 // Shows (wrong) capture of free variable z under the let:
-let e9s0 = Let("z", CstI 22, Prim("*", Var "y", Var "z"))
+let e9s0 = Let([ ("z", CstI 22) ], Prim("*", Var "y", Var "z"))
 
 let e9s1 = nsubst e9s0 [ ("y", Var "z") ]
 
@@ -165,6 +179,9 @@ let newVar: string -> string =
 
 (* Correct, capture-avoiding substitution *)
 
+
+/// TODO: Skipping this function for now as it is not part of the assignment
+/// should be correct to reflect the changes in the new expression language
 let rec subst (e: expr) (env: (string * expr) list) : expr =
     match e with
     | CstI i -> e
@@ -217,10 +234,20 @@ let rec minus (xs, ys) =
 
 let rec freevars e : string list =
     match e with
-    | CstI i -> []
+    | CstI _ -> []
     | Var x -> [ x ]
-    | Let(x, erhs, ebody) -> union (freevars erhs, minus (freevars ebody, [ x ]))
-    | Prim(ope, e1, e2) -> union (freevars e1, freevars e2)
+    | Let(bindings, ebody) ->
+        let rec aux bds acc =
+            match bds with
+            | [] -> minus (freevars ebody, acc)
+            | (x, erhs) :: tail ->
+                let freeInRhs = minus (freevars erhs, acc)
+                union (freeInRhs, aux tail (x :: acc))
+
+        // Accumulator holds the variables we have bound so far these are
+        // subtracted from the total number of freevars
+        aux bindings []
+    | Prim(_, e1, e2) -> union (freevars e1, freevars e2)
 
 (* Alternative definition of closed *)
 
@@ -252,9 +279,13 @@ let rec tcomp (e: expr) (cenv: string list) : texpr =
     match e with
     | CstI i -> TCstI i
     | Var x -> TVar(getindex cenv x)
-    | Let(x, erhs, ebody) ->
-        let cenv1 = x :: cenv
-        TLet(tcomp erhs cenv, tcomp ebody cenv1)
+    | Let(bindings, ebody) ->
+        let rec comp bds cenv' =
+            match bds with
+            | [] -> tcomp ebody cenv'
+            | (x, erhs) :: tail -> TLet(tcomp erhs cenv', comp tail (x :: cenv'))
+
+        comp bindings cenv
     | Prim(ope, e1, e2) -> TPrim(ope, tcomp e1 cenv, tcomp e2 cenv)
 
 (* Evaluation of target expressions with variable indexes.  The
@@ -321,9 +352,9 @@ let rec rcomp (e: expr) : rinstr list =
     | Prim _ -> failwith "unknown primitive"
 
 (* Correctness: eval e []  equals  reval (rcomp e) [] *)
-eval e0 []
-rcomp e0
-reval (rcomp e0) []
+eval e0 [] |> ignore
+rcomp e0 |> ignore
+reval (rcomp e0) [] |> ignore
 
 
 
