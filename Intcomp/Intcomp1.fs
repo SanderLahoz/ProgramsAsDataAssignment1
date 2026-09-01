@@ -57,7 +57,7 @@ let rec eval e (env: (string * int) list) : int =
     match e with
     | CstI i -> i
     | Var x -> lookup env x
-    | Let(bindings, expr) ->
+    | Let(bindings, ebody) ->
         let rec evalEnv bds env =
             match bds with
             | [] -> env
@@ -66,9 +66,7 @@ let rec eval e (env: (string * int) list) : int =
                 evalEnv tail ((s, v) :: env)
 
         let env' = evalEnv bindings env
-        eval expr env'
-
-
+        eval ebody env'
     | Prim("+", e1, e2) -> eval e1 env + eval e2 env
     | Prim("*", e1, e2) -> eval e1 env * eval e2 env
     | Prim("-", e1, e2) -> eval e1 env - eval e2 env
@@ -94,12 +92,16 @@ let rec mem x vs =
 
 let rec closedin (e: expr) (vs: string list) : bool =
     match e with
-    | CstI i -> true
+    | CstI _ -> true
     | Var x -> List.exists (fun y -> x = y) vs
-    | Let(x, erhs, ebody) ->
-        let vs1 = x :: vs
-        closedin erhs vs && closedin ebody vs1
-    | Prim(ope, e1, e2) -> closedin e1 vs && closedin e2 vs
+    | Let(bindings, ebody) ->
+        let rec checkBindings bds vs' =
+            match bds with
+            | [] -> closedin ebody vs'
+            | (s, erhs) :: tail -> closedin erhs vs' && checkBindings tail (s :: vs')
+
+        checkBindings bindings vs
+    | Prim(_, e1, e2) -> closedin e1 vs && closedin e2 vs
 
 (* An expression is closed if it is closed in the empty environment *)
 
@@ -331,9 +333,9 @@ let rec rcomp (e: expr) : rinstr list =
     | Prim _ -> failwith "unknown primitive"
 
 (* Correctness: eval e []  equals  reval (rcomp e) [] *)
-eval e0 []
-rcomp e0
-reval (rcomp e0) []
+eval e0 [] |> ignore
+rcomp e0 |> ignore
+reval (rcomp e0) [] |> ignore
 
 
 
