@@ -234,10 +234,20 @@ let rec minus (xs, ys) =
 
 let rec freevars e : string list =
     match e with
-    | CstI i -> []
+    | CstI _ -> []
     | Var x -> [ x ]
-    | Let(x, erhs, ebody) -> union (freevars erhs, minus (freevars ebody, [ x ]))
-    | Prim(ope, e1, e2) -> union (freevars e1, freevars e2)
+    | Let(bindings, ebody) ->
+        let rec aux bds acc =
+            match bds with
+            | [] -> minus (freevars ebody, acc)
+            | (x, erhs) :: tail ->
+                let freeInRhs = minus (freevars erhs, acc)
+                union (freeInRhs, aux tail (x :: acc))
+
+        // Accumulator holds the variables we have bound so far these are
+        // subtracted from the total number of freevars
+        aux bindings []
+    | Prim(_, e1, e2) -> union (freevars e1, freevars e2)
 
 (* Alternative definition of closed *)
 
