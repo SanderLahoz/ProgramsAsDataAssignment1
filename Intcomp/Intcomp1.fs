@@ -398,6 +398,7 @@ type stackvalue =
 
 (* Compilation to a list of instructions for a unified-stack machine *)
 
+(*
 let rec scomp (e: expr) (cenv: stackvalue list) : sinstr list =
     match e with
     | CstI i -> [ SCstI i ]
@@ -412,6 +413,7 @@ let s1 = scomp e1 []
 let s2 = scomp e2 []
 let s3 = scomp e3 []
 let s5 = scomp e5 []
+*)
 
 (* Output the integers in list inss to the text file called fname: *)
 
