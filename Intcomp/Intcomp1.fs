@@ -130,7 +130,8 @@ let rec remove env x =
 (* Naive substitution, may capture free variables: *)
 
 /// TODO: Skipping this function for now as it is not part of the assignment
-/// should be correct to reflect the changes in the new expression language
+/// should be corrected to reflect the changes in the new expression language
+(*
 let rec nsubst (e: expr) (env: (string * expr) list) : expr =
     match e with
     | CstI i -> e
@@ -167,6 +168,7 @@ let e9s1 = nsubst e9s0 [ ("y", Var "z") ]
 
 //
 let e9s2 = nsubst e9s0 [ ("z", Prim("-", CstI 5, CstI 4)) ]
+*)
 
 let newVar: string -> string =
     let n = ref 0
@@ -181,7 +183,8 @@ let newVar: string -> string =
 
 
 /// TODO: Skipping this function for now as it is not part of the assignment
-/// should be correct to reflect the changes in the new expression language
+/// should be corrected to reflect the changes in the new expression language
+(*
 let rec subst (e: expr) (env: (string * expr) list) : expr =
     match e with
     | CstI i -> e
@@ -191,6 +194,7 @@ let rec subst (e: expr) (env: (string * expr) list) : expr =
         let newenv = (x, Var newx) :: remove env x
         Let(newx, subst erhs env, subst ebody newenv)
     | Prim(ope, e1, e2) -> Prim(ope, subst e1 env, subst e2 env)
+
 
 let e6s1a = subst e6 [ ("z", CstI 17) ]
 
@@ -207,6 +211,8 @@ let e8s1a = subst e8s0 [ ("z", CstI 100) ]
 
 // Shows renaming of bound variable z (to z3), avoiding capture of free z
 let e9s1a = subst e9s0 [ ("y", Var "z") ]
+
+*)
 
 (* ---------------------------------------------------------------------- *)
 
