@@ -450,6 +450,17 @@ let sinstrToInt (ins: sinstr) : int list =
     | SSwap -> [ 6 ]
 
 
+let assemble (inss: sinstr list) : int list =
+    let rec aux vs acc =
+        match vs with
+        | [] -> acc
+        | head :: tail ->
+            match sinstrToInt head with
+            | [ x ] -> aux tail (x :: acc)
+            | [ x; y ] -> aux tail (y :: x :: acc)
+            | _ -> failwith "Unexpected sinstr"
+
+    List.rev (aux inss [])
 
 (* Output the integers in list inss to the text file called fname: *)
 
