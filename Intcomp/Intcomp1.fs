@@ -129,16 +129,22 @@ let rec remove env x =
 
 (* Naive substitution, may capture free variables: *)
 
-/// TODO: Skipping this function for now as it is not part of the assignment
-/// should be corrected to reflect the changes in the new expression language
-(*
 let rec nsubst (e: expr) (env: (string * expr) list) : expr =
     match e with
     | CstI i -> e
     | Var x -> lookOrSelf env x
-    | Let(x, erhs, ebody) ->
-        let newenv = remove env x
-        Let(x, nsubst erhs env, nsubst ebody newenv)
+    | Let(bindings, ebody) ->
+        let rec nsubstBindings bds env =
+            match bds with
+            | [] -> ([], env)
+            | (x, erhs) :: tail ->
+                let erhs' = nsubst erhs env // rhs sees only earlier bindings
+                let env' = remove env x // x is now shadowed for the rest
+                let tail', env'' = nsubstBindings tail env'
+                ((x, erhs') :: tail', env'')
+
+        let bindings', env' = nsubstBindings bindings env
+        Let(bindings', nsubst ebody env')
     | Prim(ope, e1, e2) -> Prim(ope, nsubst e1 env, nsubst e2 env)
 
 (* Some expressions with free variables: *)
@@ -168,7 +174,7 @@ let e9s1 = nsubst e9s0 [ ("y", Var "z") ]
 
 //
 let e9s2 = nsubst e9s0 [ ("z", Prim("-", CstI 5, CstI 4)) ]
-*)
+
 
 let newVar: string -> string =
     let n = ref 0
@@ -182,17 +188,23 @@ let newVar: string -> string =
 (* Correct, capture-avoiding substitution *)
 
 
-/// TODO: Skipping this function for now as it is not part of the assignment
-/// should be corrected to reflect the changes in the new expression language
-(*
 let rec subst (e: expr) (env: (string * expr) list) : expr =
     match e with
-    | CstI i -> e
+    | CstI _ -> e
     | Var x -> lookOrSelf env x
-    | Let(x, erhs, ebody) ->
-        let newx = newVar x
-        let newenv = (x, Var newx) :: remove env x
-        Let(newx, subst erhs env, subst ebody newenv)
+    | Let(bindings, ebody) ->
+        let rec substBindings bds env =
+            match bds with
+            | [] -> [], env
+            | (x, erhs) :: tail ->
+                let erhs' = subst erhs env // rhs sees only earlier bindings
+                let newx = newVar x
+                let env' = (x, Var newx) :: remove env x // extend for later bindings/body
+                let tail', env'' = substBindings tail env'
+                (newx, erhs') :: tail', env''
+
+        let bindings', env' = substBindings bindings env
+        Let(bindings', subst ebody env')
     | Prim(ope, e1, e2) -> Prim(ope, subst e1 env, subst e2 env)
 
 
@@ -212,7 +224,7 @@ let e8s1a = subst e8s0 [ ("z", CstI 100) ]
 // Shows renaming of bound variable z (to z3), avoiding capture of free z
 let e9s1a = subst e9s0 [ ("y", Var "z") ]
 
-*)
+
 
 (* ---------------------------------------------------------------------- *)
 
@@ -398,12 +410,24 @@ type stackvalue =
 
 (* Compilation to a list of instructions for a unified-stack machine *)
 
-(*
+
 let rec scomp (e: expr) (cenv: stackvalue list) : sinstr list =
     match e with
     | CstI i -> [ SCstI i ]
     | Var x -> [ SVar(getindex cenv (Bound x)) ]
-    | Let(x, erhs, ebody) -> scomp erhs cenv @ scomp ebody (Bound x :: cenv) @ [ SSwap; SPop ]
+    | Let(bindings, ebody) ->
+        let rec compBindings bds cenv =
+            match bds with
+            | [] -> [], cenv
+            | (x, erhs) :: tail ->
+                let code = scomp erhs cenv
+                let tailCode, finalCenv = compBindings tail (Bound x :: cenv)
+                code @ tailCode, finalCenv
+
+        let bindingsCode, cenv' = compBindings bindings cenv
+        let bodyCode = scomp ebody cenv'
+        let popCode = List.concat (List.replicate (List.length bindings) [ SSwap; SPop ])
+        bindingsCode @ bodyCode @ popCode
     | Prim("+", e1, e2) -> scomp e1 cenv @ scomp e2 (Value :: cenv) @ [ SAdd ]
     | Prim("-", e1, e2) -> scomp e1 cenv @ scomp e2 (Value :: cenv) @ [ SSub ]
     | Prim("*", e1, e2) -> scomp e1 cenv @ scomp e2 (Value :: cenv) @ [ SMul ]
@@ -413,7 +437,7 @@ let s1 = scomp e1 []
 let s2 = scomp e2 []
 let s3 = scomp e3 []
 let s5 = scomp e5 []
-*)
+
 
 (* Output the integers in list inss to the text file called fname: *)
 
