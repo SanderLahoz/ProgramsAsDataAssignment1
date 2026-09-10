@@ -87,9 +87,9 @@ We wrote the following regular expression solution: (b|ab)*a?
 
 We aswell created following NFA and DFA:
 
-![NFA diagram](path/to/NFA.png)
+![NFA diagram](Images/NFA.png)
 
-![DFA diagram](path/to/DFA.png)
+![DFA diagram](Images/DFA.png)
 
 ##Exercise 3.3
 
