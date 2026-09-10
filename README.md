@@ -95,7 +95,7 @@ only required action was to compile Machine.java and run:
 
 We wrote the following regular expression solution: (b|ab)*a?
 
-We aswell created following NFA and DFA:
+and created the following NFA and DFA:
 
 ![NFA diagram](Images/NFA.png)
 
