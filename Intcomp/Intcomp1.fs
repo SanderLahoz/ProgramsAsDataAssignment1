@@ -15,7 +15,7 @@ type expr =
 
 (* Some closed expressions: *)
 
-let t =    // Written by us.
+let t = // Written by us.
     Let([ ("x1", Prim("+", CstI 5, CstI 7)); ("x2", Prim("*", Var "x1", CstI 2)) ], Prim("+", Var "x1", Var "x2"))
 
 let e0 = Prim("+", CstI 17, Prim("+", CstI 5, CstI 7))
@@ -57,7 +57,7 @@ let rec eval e (env: (string * int) list) : int =
     match e with
     | CstI i -> i
     | Var x -> lookup env x
-    | Let(bindings, ebody) ->    // Modified by us.
+    | Let(bindings, ebody) -> // Modified by us.
         let rec evalEnv bds env =
             match bds with
             | [] -> env
@@ -94,7 +94,7 @@ let rec closedin (e: expr) (vs: string list) : bool =
     match e with
     | CstI _ -> true
     | Var x -> List.exists (fun y -> x = y) vs
-    | Let(bindings, ebody) ->    // Modified by us.
+    | Let(bindings, ebody) -> // Modified by us.
         let rec checkBindings bds vs' =
             match bds with
             | [] -> closedin ebody vs'
@@ -133,7 +133,7 @@ let rec nsubst (e: expr) (env: (string * expr) list) : expr =
     match e with
     | CstI i -> e
     | Var x -> lookOrSelf env x
-    | Let(bindings, ebody) ->    // We modified this.
+    | Let(bindings, ebody) -> // We modified this.
         let rec nsubstBindings bds env =
             match bds with
             | [] -> ([], env)
@@ -189,10 +189,10 @@ let newVar: string -> string =
 
 
 let rec subst (e: expr) (env: (string * expr) list) : expr =
-    match e with    
+    match e with
     | CstI _ -> e // We modified this.
     | Var x -> lookOrSelf env x
-    | Let(bindings, ebody) ->    // We modified this.
+    | Let(bindings, ebody) -> // We modified this.
         let rec substBindings bds env =
             match bds with
             | [] -> [], env
@@ -254,7 +254,7 @@ let rec freevars e : string list =
     match e with
     | CstI _ -> [] // We modified this.
     | Var x -> [ x ]
-    | Let(bindings, ebody) ->    // We modified this.
+    | Let(bindings, ebody) -> // We modified this.
         let rec aux bds acc =
             match bds with
             | [] -> minus (freevars ebody, acc)
@@ -297,7 +297,7 @@ let rec tcomp (e: expr) (cenv: string list) : texpr =
     match e with
     | CstI i -> TCstI i
     | Var x -> TVar(getindex cenv x)
-    | Let(bindings, ebody) ->    // We modified this.
+    | Let(bindings, ebody) -> // We modified this.
         let rec comp bds cenv' =
             match bds with
             | [] -> tcomp ebody cenv'
@@ -416,7 +416,7 @@ let rec scomp (e: expr) (cenv: stackvalue list) : sinstr list =
     match e with
     | CstI i -> [ SCstI i ]
     | Var x -> [ SVar(getindex cenv (Bound x)) ]
-    | Let(bindings, ebody) ->    // We modified this.
+    | Let(bindings, ebody) -> // We modified this.
         let rec compBindings bds cenv =
             match bds with
             | [] -> [], cenv
@@ -464,12 +464,6 @@ let assemble (inss: sinstr list) : int list =
 
     List.rev (aux inss [])
 
-let intsOfExpr (e:expr): int list = assemble (scomp e[])
-
-let i1 = intsOfExpr e1
-let i2 = intsOfExpr e2
-let i3 = intsOfExpr e3
-let i5 = intsOfExpr e5
 
 // We wrote the section above.
 

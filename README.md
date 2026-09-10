@@ -82,7 +82,7 @@ variable name as it goes. We did not make any chnages to texpr or teval.
 We built the following: sinstrToInt that translates a list of byte-code instructions
 into a list of integers. sinstrToInt is called inside assemble for each instruction and
 assemble takes all instructions and creates a int list containing all instructions.
-We can test that this works using intsToExpr, which is created using scomp.
+
 
 ##Exercise 2.5 - in Intcomp1.fs
 We did not do any changes at this exercise since the code was already given to us. The
