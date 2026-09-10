@@ -78,16 +78,15 @@ variable name as it goes. We did not make any chnages to texpr or teval.
 ##Exercise 3.3
 
 
-Main ⇒ Expr EOF
-     ⇒ LET NAME EQ Expr IN Expr END EOF
-     ⇒ LET NAME EQ Expr IN Expr PLUS Expr END EOF
-     ⇒ LET NAME EQ Expr IN Expr PLUS Expr TIMES Expr END EOF
-     ⇒ LET NAME EQ Expr IN Expr PLUS Expr TIMES CSTINT END EOF
-     ⇒ LET NAME EQ Expr IN Expr PLUS CSTINT TIMES CSTINT END EOF
-     ⇒ LET NAME EQ Expr IN Expr PLUS CSTINT TIMES CSTINT END EOF
-     ⇒ LET NAME EQ Expr IN NAME PLUS CSTINT TIMES CSTINT END EOF
-     ⇒ LET NAME EQ LPAR Expr RPAR IN NAME PLUS CSTINT TIMES CSTINT END EOF
-     ⇒ LET NAME EQ LPAR CSTINT RPAR IN NAME PLUS CSTINT TIMES CSTINT END EOF
+Main ⇒ Expr EOF                                                                      A
+     ⇒ LET NAME EQ Expr IN Expr END EOF                                              F
+     ⇒ LET NAME EQ Expr IN Expr PLUS Expr END EOF                                    H
+     ⇒ LET NAME EQ Expr IN Expr PLUS Expr TIMES Expr END EOF                         G
+     ⇒ LET NAME EQ Expr IN Expr PLUS Expr TIMES CSTINT END EOF                       C
+     ⇒ LET NAME EQ Expr IN Expr PLUS CSTINT TIMES CSTINT END EOF                     C
+     ⇒ LET NAME EQ Expr IN NAME PLUS CSTINT TIMES CSTINT END EOF                     B
+     ⇒ LET NAME EQ LPAR Expr RPAR IN NAME PLUS CSTINT TIMES CSTINT END EOF           E
+     ⇒ LET NAME EQ LPAR CSTINT RPAR IN NAME PLUS CSTINT TIMES CSTINT END EOF         C
 
 
 
