@@ -15,7 +15,7 @@ type expr =
 
 (* Some closed expressions: *)
 
-let t =
+let t =    // Written by us.
     Let([ ("x1", Prim("+", CstI 5, CstI 7)); ("x2", Prim("*", Var "x1", CstI 2)) ], Prim("+", Var "x1", Var "x2"))
 
 let e0 = Prim("+", CstI 17, Prim("+", CstI 5, CstI 7))
@@ -57,7 +57,7 @@ let rec eval e (env: (string * int) list) : int =
     match e with
     | CstI i -> i
     | Var x -> lookup env x
-    | Let(bindings, ebody) ->
+    | Let(bindings, ebody) ->    // Modified by us.
         let rec evalEnv bds env =
             match bds with
             | [] -> env
@@ -94,7 +94,7 @@ let rec closedin (e: expr) (vs: string list) : bool =
     match e with
     | CstI _ -> true
     | Var x -> List.exists (fun y -> x = y) vs
-    | Let(bindings, ebody) ->
+    | Let(bindings, ebody) ->    // Modified by us.
         let rec checkBindings bds vs' =
             match bds with
             | [] -> closedin ebody vs'
@@ -133,7 +133,7 @@ let rec nsubst (e: expr) (env: (string * expr) list) : expr =
     match e with
     | CstI i -> e
     | Var x -> lookOrSelf env x
-    | Let(bindings, ebody) ->
+    | Let(bindings, ebody) ->    // We modified this.
         let rec nsubstBindings bds env =
             match bds with
             | [] -> ([], env)
@@ -190,9 +190,9 @@ let newVar: string -> string =
 
 let rec subst (e: expr) (env: (string * expr) list) : expr =
     match e with
-    | CstI _ -> e
+    | CstI _ -> e // We modified this.
     | Var x -> lookOrSelf env x
-    | Let(bindings, ebody) ->
+    | Let(bindings, ebody) ->    // We modified this.
         let rec substBindings bds env =
             match bds with
             | [] -> [], env
@@ -252,9 +252,9 @@ let rec minus (xs, ys) =
 
 let rec freevars e : string list =
     match e with
-    | CstI _ -> []
+    | CstI _ -> [] // We modified this.
     | Var x -> [ x ]
-    | Let(bindings, ebody) ->
+    | Let(bindings, ebody) ->    // We modified this.
         let rec aux bds acc =
             match bds with
             | [] -> minus (freevars ebody, acc)
@@ -297,7 +297,7 @@ let rec tcomp (e: expr) (cenv: string list) : texpr =
     match e with
     | CstI i -> TCstI i
     | Var x -> TVar(getindex cenv x)
-    | Let(bindings, ebody) ->
+    | Let(bindings, ebody) ->    // We modified this.
         let rec comp bds cenv' =
             match bds with
             | [] -> tcomp ebody cenv'
@@ -370,10 +370,11 @@ let rec rcomp (e: expr) : rinstr list =
     | Prim _ -> failwith "unknown primitive"
 
 (* Correctness: eval e []  equals  reval (rcomp e) [] *)
+// We modified the section below.
 eval e0 [] |> ignore
 rcomp e0 |> ignore
 reval (rcomp e0) [] |> ignore
-
+// We modified the section above.
 
 
 (* Storing intermediate results and variable bindings in the same stack *)
@@ -415,7 +416,7 @@ let rec scomp (e: expr) (cenv: stackvalue list) : sinstr list =
     match e with
     | CstI i -> [ SCstI i ]
     | Var x -> [ SVar(getindex cenv (Bound x)) ]
-    | Let(bindings, ebody) ->
+    | Let(bindings, ebody) ->    // We modified this.
         let rec compBindings bds cenv =
             match bds with
             | [] -> [], cenv
@@ -438,7 +439,7 @@ let s2 = scomp e2 []
 let s3 = scomp e3 []
 let s5 = scomp e5 []
 
-
+// We mrote the section below.
 let sinstrToInt (ins: sinstr) : int list =
     match ins with
     | SCstI x -> [ 0; x ]
@@ -461,6 +462,7 @@ let assemble (inss: sinstr list) : int list =
             | _ -> failwith "Unexpected sinstr"
 
     List.rev (aux inss [])
+// We wrote the section above.
 
 (* Output the integers in list inss to the text file called fname: *)
 
