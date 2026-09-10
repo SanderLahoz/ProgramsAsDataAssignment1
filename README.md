@@ -1,16 +1,19 @@
 # ProgramsAsDataAssignment1
 
 ##Overview
+
 Ex 1.1 and 1.2 are in the Intro2.fs file in the Intro folder.
 Ex 1.4 is located in the Expr.cs in Exercise1_4_CSharp folder and was written in C#.
 Ex 2.1, 2.2, and 2.3 are in the Intcomp1.fs file in hte Intcomp folder.
 
 ##Note
+
 To make the code easily distinguishable, every line or section that was written or modified by us was
 annotated with "Written by us" comments (or similar, e.g. TODO notes).
 
 
 ##Exercise 1.1 - in Intro2.fs
+
 i) We extended the expr type with a new If(expr, expr, expr) constructor, and extended eval 
 to handle three additional operators: "max", "min", and "==" that return 1 for true, and 0 for false).
 ii) Added example expressions e4 to e7 using the new operators that are evaluated using eval/eval'.
@@ -21,6 +24,7 @@ greater than 0, otherwise evaluates e3.
 
 
 ##Exercise 1.2 - in Intro2.fs
+
 i) Declared aexpr without let-bindings, with constructors CstrI, Var, Add, Sub, and Mul.
 ii) Added example expressions e8 to e10 that represent v - (w + z), 2 * (v- (w + z)), and 
 x + y + z + v.
@@ -33,6 +37,7 @@ v) Implemented differentiate: aexpr -> string _> aexpr, which does differentiati
 the symbolic dervative of an arithmetic exoression.
 
 ##Exercise 1.4 - in Expr.cs and Program.cs
+
 There was an option in the exercise between choosing Java and C#. For this exercise, 
 we are using C#.
 i) We built the classes that followed the aexpr type: an abstract Expr base class, CstI and Var
@@ -46,6 +51,7 @@ constant folding as the simplify in the 1.2 iv. CstI and Var simplify to themsel
 
 
 ##Exercise 2.1 - in Intcomp1.fs
+
 We extended the expr type so taht Let takes a list of string * expr instead of 
 just one, which allows multiple let-bindings that are sequential
 in one let expression. Also, revised Let in eval with a evalEnv helper that folds over a list of
@@ -54,6 +60,7 @@ previous bindings in the same let, and then evaluates the body in the final envi
 
 
 ##Exercise 2.2
+
 Revised Let in the freevars with aux helper that accumulates the name bound while walking the 
 bindings. For each right-hand side of the bidnings, only the variables that are bound by the
 earlier bindings in the same let are excluded, not the variable that is currently being 
@@ -61,6 +68,7 @@ bound, and also not the later bindings.
 
 
 ##Exercise 2.3
+
 Revised Ler in the tcomp with comp helper that folds over the bindings, produces TLet 
 expressions, and extends the compile time environment cenv with each of the bound
 variable name as it goes. We did not make any chnages to texpr or teval.
@@ -69,13 +77,14 @@ variable name as it goes. We did not make any chnages to texpr or teval.
 ------------------------------------------------------------------------------------------------
 
 
-##Exercise 2.4
+##Exercise 2.4 - in Intcomp1.fs
+
 We built the following: sinstrToInt that translates a list of byte-code instructions
 into a list of integers. sinstrToInt is called inside assemble for each instruction and
 assemble takes all instructions and creates a int list containing all instructions.
 We can test that this works using intsToExpr, which is created using scomp.
 
-##Exercise 2.5
+##Exercise 2.5 - in Intcomp1.fs
 We did not do any changes at this exercise since the code was already given to us. The
 only required action was to compile Machine.java and run:     
 % javac Machine.java
@@ -83,6 +92,7 @@ only required action was to compile Machine.java and run:
 % java Machine is1.txt.
 
 ##Exercise 3.2
+
 We wrote the following regular expression solution: (b|ab)*a?
 
 We aswell created following NFA and DFA:
@@ -93,6 +103,7 @@ We aswell created following NFA and DFA:
 
 ##Exercise 3.3
 
+We wrote the rightmost derivation of: let z = (17) in z + 2 * 3 end EOF
 
 Main ⇒ Expr EOF                                                                      A
      ⇒ LET NAME EQ Expr IN Expr END EOF                                              F
@@ -107,3 +118,7 @@ Main ⇒ Expr EOF                                                               
 
 
 ##Exercise 3.4
+
+We drew the derivation from Exercise 3.3 as a tree.
+
+![DFA diagram](Images/DerivationTree.png)
