@@ -76,6 +76,11 @@ assemble takes all instructions and creates a int list containing all instructio
 We can test that this works using intsToExpr, which is created using scomp.
 
 ##Exercise 2.5
+We did not do any changes at this exercise since the code was already given to us. The
+only required action was to compile Machine.java and run:     
+% javac Machine.java
+
+% java Machine is1.txt.
 
 ##Exercise 3.2
 
