@@ -189,7 +189,7 @@ let newVar: string -> string =
 
 
 let rec subst (e: expr) (env: (string * expr) list) : expr =
-    match e with
+    match e with    
     | CstI _ -> e // We modified this.
     | Var x -> lookOrSelf env x
     | Let(bindings, ebody) ->    // We modified this.
@@ -440,6 +440,7 @@ let s3 = scomp e3 []
 let s5 = scomp e5 []
 
 // We mrote the section below.
+
 let sinstrToInt (ins: sinstr) : int list =
     match ins with
     | SCstI x -> [ 0; x ]
@@ -462,6 +463,14 @@ let assemble (inss: sinstr list) : int list =
             | _ -> failwith "Unexpected sinstr"
 
     List.rev (aux inss [])
+
+let intsOfExpr (e:expr): int list = assemble (scomp e[])
+
+let i1 = intsOfExpr e1
+let i2 = intsOfExpr e2
+let i3 = intsOfExpr e3
+let i5 = intsOfExpr e5
+
 // We wrote the section above.
 
 (* Output the integers in list inss to the text file called fname: *)
