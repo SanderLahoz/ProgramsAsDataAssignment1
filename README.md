@@ -83,6 +83,13 @@ only required action was to compile Machine.java and run:
 % java Machine is1.txt.
 
 ##Exercise 3.2
+We wrote the following regular expression solution: (b|ab)*a?
+
+We aswell created following NFA and DFA:
+
+![NFA diagram](path/to/NFA.png)
+
+![DFA diagram](path/to/DFA.png)
 
 ##Exercise 3.3
 
