@@ -22,7 +22,7 @@
     <ItemGroup>
     <!-- Source generators -->
     <FsYacc Include="ExprPar.fsy">
-      <OtherFlags>--module ExprPar</OtherFlags>
+      <OtherFlags>--module ExprPar -v</OtherFlags>
     </FsYacc>
 
     <FsLex Include="ExprLex.fsl">
