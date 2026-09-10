@@ -64,3 +64,31 @@ bound, and also not the later bindings.
 Revised Ler in the tcomp with comp helper that folds over the bindings, produces TLet 
 expressions, and extends the compile time environment cenv with each of the bound
 variable name as it goes. We did not make any chnages to texpr or teval.
+
+
+------------------------------------------------------------------------------------------------
+
+
+##Exercise 2.4
+
+##Exercise 2.5
+
+##Exercise 3.2
+
+##Exercise 3.3
+
+
+Main ⇒ Expr EOF
+     ⇒ LET NAME EQ Expr IN Expr END EOF
+     ⇒ LET NAME EQ Expr IN Expr PLUS Expr END EOF
+     ⇒ LET NAME EQ Expr IN Expr PLUS Expr TIMES Expr END EOF
+     ⇒ LET NAME EQ Expr IN Expr PLUS Expr TIMES CSTINT END EOF
+     ⇒ LET NAME EQ Expr IN Expr PLUS CSTINT TIMES CSTINT END EOF
+     ⇒ LET NAME EQ Expr IN Expr PLUS CSTINT TIMES CSTINT END EOF
+     ⇒ LET NAME EQ Expr IN NAME PLUS CSTINT TIMES CSTINT END EOF
+     ⇒ LET NAME EQ LPAR Expr RPAR IN NAME PLUS CSTINT TIMES CSTINT END EOF
+     ⇒ LET NAME EQ LPAR CSTINT RPAR IN NAME PLUS CSTINT TIMES CSTINT END EOF
+
+
+
+##Exercise 3.4
